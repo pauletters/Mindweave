@@ -1,13 +1,6 @@
-import { Schema, Document, ObjectId, Types, SchemaDefinitionProperty } from 'mongoose';
+import { Schema, Types, SchemaDefinitionProperty } from 'mongoose';
 
-interface IReaction extends Document {
-  reactionId: ObjectId;
-  reactionBody: string;
-  username: string;
-  createdAt: Date;
-}
-
-const reactionSchema = new Schema<IReaction>(
+const reactionSchema = new Schema(
   {
     reactionId: {
       type: Schema.Types.ObjectId,
@@ -24,8 +17,8 @@ const reactionSchema = new Schema<IReaction>(
     },
     createdAt: {
       type: Date,
-      default: () => new Date(),
-      get: (value: any) => new Date(value).toLocaleDateString('en-US', { 
+      default: Date.now,
+      get: (timestamp: Date) => timestamp.toLocaleDateString('en-US', { 
         weekday: 'long', 
         year: 'numeric', 
         month: 'long', 

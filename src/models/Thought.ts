@@ -1,11 +1,16 @@
-import { Schema, Document, model, ObjectId, SchemaDefinitionProperty } from 'mongoose';
+import { Schema, Document, Types, model, SchemaDefinitionProperty } from 'mongoose';
 import reactionsSchema from './Reaction';
 
 interface IThought extends Document {
   thoughtText: String;
   createdAt: Date;
   username: String;
-  reactions: ObjectId[];
+  reactions: Array<{
+    reactionId: Types.ObjectId;
+    reactionBody: String;
+    username: String;
+    createdAt: Date;
+  }>;
  }
 
 // Schema to create User model
@@ -19,8 +24,8 @@ const thoughtSchema = new Schema<IThought>(
     },
     createdAt: {
     type: Date,
-    default: () => new Date(),
-    get: (value: any) => new Date(value).toLocaleDateString('en-US', { 
+    default: Date.now,
+    get: (timestamp: Date) => timestamp.toLocaleDateString('en-US', { 
         weekday: 'long', 
         year: 'numeric', 
         month: 'long', 
@@ -46,12 +51,11 @@ const thoughtSchema = new Schema<IThought>(
 
 thoughtSchema
   .virtual('reactionCount')
-  // Getter
-  .get(function (this: any) {
+  .get(function (this: IThought) {
     return `${this.reactions.length}`;
   });
 
 // Initialize User model
-const Thought = model('Thought', thoughtSchema);
+const Thought = model<IThought>('Thought', thoughtSchema);
 
 export default Thought;
