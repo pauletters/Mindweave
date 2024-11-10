@@ -1,14 +1,15 @@
 import { Schema, Document, Types, model, SchemaDefinitionProperty } from 'mongoose';
-import reactionsSchema from './Reaction';
+import reactionsSchema from './Reaction.js';
 
 interface IThought extends Document {
-  thoughtText: String;
+  thoughtText: string;
   createdAt: Date;
-  username: String;
+  username: string;
+  userId: Types.ObjectId;
   reactions: Array<{
     reactionId: Types.ObjectId;
-    reactionBody: String;
-    username: String;
+    reactionBody: string;
+    username: string;
     createdAt: Date;
   }>;
  }
@@ -37,6 +38,11 @@ const thoughtSchema = new Schema<IThought>(
     username: {
     type: String,
     required: [true, 'Username is required'],
+    },
+    userId: {
+    type: Schema.Types.ObjectId,
+    ref: 'User',
+    required: true,
     },
     reactions: [reactionsSchema],
   },
