@@ -85,6 +85,7 @@ import { Request, Response } from 'express';
     }
   }
 
+  // adds a reaction to a thought by its ID
   export const addReaction = async(req: Request, res: Response): Promise<Response> => {
     try {
       const thought = await Thought.findOneAndUpdate(
@@ -103,6 +104,7 @@ import { Request, Response } from 'express';
     }
   };
   
+  // removes a reaction from a thought by its ID
   export const removeReaction = async(req: Request, res: Response): Promise<Response> => {
     try {
       const thought = await Thought.findOneAndUpdate(

@@ -1,10 +1,10 @@
-import { Schema, Document, model, ObjectId } from 'mongoose';
+import { Schema, Document, model, Types } from 'mongoose';
 
 interface IUser extends Document {
   username: string;
   email: string;
-  thoughts: ObjectId[];
-  friends: ObjectId[];
+  thoughts: Types.ObjectId[];
+  friends: Types.ObjectId[];
  }
 
 // Schema to create User model
@@ -46,9 +46,9 @@ const userSchema = new Schema<IUser>(
   }
 );
 
+// Virtual to get total count of friends
 userSchema
   .virtual('friendCount')
-  // Getter
   .get(function (this: any) {
     return `${this.friends.length}`;
   });
@@ -57,6 +57,6 @@ userSchema.index({ username: 1 }, { unique: true });
 userSchema.index({ email: 1 }, { unique: true });
 
 // Initialize User model
-const User = model('user', userSchema);
+const User = model<IUser>('User', userSchema);
 
 export default User
