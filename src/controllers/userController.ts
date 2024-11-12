@@ -1,13 +1,17 @@
 import User from '../models/User.js';
 import Thought from '../models/Thought.js';
 import { Request, Response } from 'express';
+import { Types } from 'mongoose';
 
 // finds all users
   export const getUsers = async(_req: Request, res: Response): Promise<Response> => {
     try {
+      console.log('Finding all users...');
       const users = await User.find();
+      console.log(`Found ${users.length} users`);
       return res.json(users);
     } catch (err) {
+      console.error('Error in getUsers:', err);
       return res.status(500).json(err);
     }
   }
@@ -15,17 +19,30 @@ import { Request, Response } from 'express';
   // finds a single user by their ID and populates thought and friend data
   export const getSingleUser = async(req: Request, res: Response): Promise<Response> => {
     try {
-      const user = await User.findOne({ _id: req.params.userId })
+      console.log('Getting user with ID:', req.params.userId);
+      if (!Types.ObjectId.isValid(req.params.userId)) {
+        console.log('Invalid user ID');
+        return res.status(400).json({ message: 'Invalid user ID' });
+      }
+      
+      const user = await User.findById({ _id: req.params.userId })
         .select('-__v')
         .populate('thoughts')
         .populate('friends');
+        console.log('Found user:', user);
 
       if (!user) {
+        console.log('No user with that ID:', req.params.userId);
          return res.status(404).json({ message: 'No user with that ID' });
       }
+      console.log('Found user:', user);
         return res.json(user);     
     } catch (err) {
-      return res.status(500).json(err);
+      console.error('Error details:', err);
+      return res.status(500).json({ 
+        message: 'Server error',
+        error: err instanceof Error ? err.message : 'Unknown error'
+      });
     }
   }
 
@@ -77,6 +94,7 @@ import { Request, Response } from 'express';
     }
   }
 
+  // adds a friend to a user's friend list
   export const addFriend = async(req: Request, res: Response): Promise<Response> => {
     try {
       const user = await User.findById(req.params.userId);
@@ -106,6 +124,7 @@ import { Request, Response } from 'express';
     }
   }
   
+  // removes a friend from a user's friend list by ID
   export const removeFriend = async(req: Request, res: Response): Promise<Response> => {
     try {
       const user = await User.findById(req.params.userId);

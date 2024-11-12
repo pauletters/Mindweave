@@ -14,7 +14,7 @@ interface IThought extends Document {
   }>;
  }
 
-// Schema to create User model
+// Schema to create Thought model
 const thoughtSchema = new Schema<IThought>(
   {
     thoughtText: {
@@ -45,6 +45,7 @@ const thoughtSchema = new Schema<IThought>(
     required: true,
     },
     reactions: [reactionsSchema],
+    // Uses reactionSchema from Reaction.js
   },
   {
     toJSON: {
@@ -55,6 +56,7 @@ const thoughtSchema = new Schema<IThought>(
   }
 );
 
+// Virtual to get total count of reactions
 thoughtSchema
   .virtual('reactionCount')
   .get(function (this: IThought) {
